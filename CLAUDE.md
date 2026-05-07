@@ -24,7 +24,7 @@ Spring Boot 4.0.6 REST microservice, Java 21, Gradle 9.4.1.
 - **Entry point:** `src/main/java/com/bookstore/bookservice/BookServiceApplication.java` — `@SpringBootApplication` bootstrap only.
 - **Package root:** `com.bookstore.bookservice`
 - **Config:** `src/main/resources/application.yaml` — server on port 9001, Tomcat thread/timeout tuning.
-- **Tests:** `src/test/java/` — JUnit 5 + Mockito via `spring-boot-starter-test`.
+- **Tests:** `src/test/java/` — JUnit 5 + Mockito via `spring-boot-starter-webmvc-test`.
 
 Spring Framework 7.0.7 underlies the stack. No database or ORM is configured — persistence is in-memory (`ConcurrentHashMap`).
 
@@ -58,11 +58,11 @@ com.bookstore.bookservice
 
 ### Spring Boot 4 / Spring Framework 7 gotchas
 
-**No `@WebMvcTest`** — the web MVC test slice was not ported. Use instead:
-- **Controller unit tests:** `MockMvcBuilders.standaloneSetup(controller).setControllerAdvice(advice).build()` with `@ExtendWith(MockitoExtension.class)`
-- **Integration tests:** `@SpringBootTest(webEnvironment = MOCK)` + `MockMvcBuilders.webAppContextSetup(context).build()`
+**`@WebMvcTest`** moved package — use `org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest` (provided by `spring-boot-webmvc-test`, pulled in via `spring-boot-starter-webmvc-test`). The old `org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest` no longer exists.
 
-**No `TestRestTemplate`** — removed in Spring Boot 4. Use MockMvc with `WebEnvironment.MOCK`.
+**`@AutoConfigureMockMvc`** also moved — use `org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc`.
+
+**`TestRestTemplate`** moved — use `org.springframework.boot.resttestclient.TestRestTemplate` (provided by `spring-boot-resttestclient`, included in `spring-boot-starter-webmvc-test`).
 
 **`@MockitoBean`** is in `org.springframework.test.context.bean.override.mockito` (Spring Framework 7), not a Spring Boot package.
 
@@ -77,7 +77,7 @@ Images are built via `bootBuildImage` (Paketo Buildpacks) — there is no Docker
 - **ARM64:** `dashaun/builder:tiny` — required because other ARM64 builders (e.g. `ghcr.io/thomasvitale/java-builder-arm64`) run the lifecycle as root, which CNB rejects.
 - **x86-64:** `paketobuildpacks/builder-jammy-tiny`
 
-Buildpacks sets the image creation date to epoch by default (shows as "46 years ago"). Add `createdDate = 'now'` to the `bootBuildImage` block in `build.gradle` to use the current timestamp.
+Buildpacks sets the image creation date to epoch by default. `createdDate = 'now'` is set in the `bootBuildImage` block in `build.gradle` so images show the correct build timestamp.
 
 ## Minikube (no manifests)
 
