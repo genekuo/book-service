@@ -4,14 +4,12 @@ import com.bookstore.bookservice.domain.Book;
 import com.bookstore.bookservice.exception.BookAlreadyExistsException;
 import com.bookstore.bookservice.exception.BookNotFoundException;
 import com.bookstore.bookservice.service.BookService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import tools.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,26 +20,21 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(BookController.class)
 class BookControllerSliceTest {
 
-    @Mock
-    private BookService bookService;
-
+    @Autowired
     private MockMvc mockMvc;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private BookService bookService;
 
     private static final Book BOOK = new Book(
             "978-1491950357", "Cloud Native Java", "Josh Long",
             "O'Reilly", null, new BigDecimal("49.99"));
-
-    @BeforeEach
-    void setUp() {
-        mockMvc = MockMvcBuilders
-                .standaloneSetup(new BookController(bookService))
-                .setControllerAdvice(new GlobalExceptionHandler())
-                .build();
-    }
 
     @Test
     void getBooksReturnsEmptyList() throws Exception {
