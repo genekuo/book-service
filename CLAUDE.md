@@ -37,3 +37,23 @@ Images are built via `bootBuildImage` (Paketo Buildpacks) — there is no Docker
 - **x86-64:** `paketobuildpacks/builder-jammy-tiny`
 
 Buildpacks sets the image creation date to epoch by default (shows as "46 years ago"). Add `createdDate = 'now'` to the `bootBuildImage` block in `build.gradle` to use the current timestamp.
+
+## Minikube (no manifests)
+
+Deploy and test imperatively — no YAML files needed:
+
+```bash
+minikube start
+./gradlew bootBuildImage
+minikube image load book-service:0.0.1-SNAPSHOT
+kubectl run book-service --image=book-service:0.0.1-SNAPSHOT --image-pull-policy=Never --port=8080 --restart=Never
+kubectl expose pod book-service --type=NodePort --port=8080
+kubectl wait --for=condition=Ready pod/book-service --timeout=60s
+kubectl port-forward pod/book-service 8080:8080   # then curl http://localhost:8080
+```
+
+`--image-pull-policy=Never` tells Kubernetes to use the image already loaded into Minikube rather than pulling from a registry.
+
+On macOS with the Docker driver, Minikube's internal IP is not routable from the host, so `kubectl port-forward` is required (NodePort alone is insufficient).
+
+Teardown: `kubectl delete pod/book-service svc/book-service`
