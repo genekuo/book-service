@@ -43,5 +43,9 @@ public class BookService {
         repository.deleteByIsbn(isbn);
     }
 
+    public long countBooks() {
+        return repository.count();
+    }
+
     public record UpsertResult(Book book, boolean created) {}
 }

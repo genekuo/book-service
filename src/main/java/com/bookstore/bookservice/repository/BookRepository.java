@@ -12,4 +12,5 @@ public interface BookRepository {
     boolean upsert(Book book);
     void deleteByIsbn(String isbn);
     boolean existsByIsbn(String isbn);
+    long count();
 }

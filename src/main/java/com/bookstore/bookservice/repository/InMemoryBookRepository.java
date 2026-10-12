@@ -47,4 +47,8 @@ public class InMemoryBookRepository implements BookRepository {
     public boolean existsByIsbn(String isbn) {
         return store.containsKey(isbn);
     }
+    @Override
+    public long count() {
+        return store.size();
+    }
 }
