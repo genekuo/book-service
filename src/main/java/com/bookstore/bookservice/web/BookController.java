@@ -30,6 +30,13 @@ public class BookController {
 
     public record BookCount(long count) {}
 
+    @GetMapping("/exists/{isbn}")
+    public BookExists bookExists(@PathVariable String isbn) {
+        return new BookExists(bookService.bookExists(isbn));
+    }
+
+    public record BookExists(boolean exists) {}
+
     @GetMapping("/{isbn}")
     public ResponseEntity<Book> getBookByIsbn(@PathVariable String isbn) {
         return ResponseEntity.ok(bookService.viewBookDetails(isbn));

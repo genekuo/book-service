@@ -90,6 +90,25 @@ class BookControllerIntegrationTest {
     }
 
     @Test
+    void bookExistsReflectsRepositoryState() throws Exception {
+        Book book = new Book("978-0000000001", "Exists Check", "Author",
+                null, null, new BigDecimal("9.99"));
+
+        mockMvc.perform(get("/books/exists/{isbn}", book.isbn()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.exists").value(false));
+
+        mockMvc.perform(post("/books")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsBytes(book)))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(get("/books/exists/{isbn}", book.isbn()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.exists").value(true));
+    }
+
+    @Test
     void getUnknownIsbnReturns404() throws Exception {
         mockMvc.perform(get("/books/{isbn}", "does-not-exist"))
                 .andExpect(status().isNotFound());

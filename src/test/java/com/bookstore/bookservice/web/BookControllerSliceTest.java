@@ -16,6 +16,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -66,6 +67,24 @@ class BookControllerSliceTest {
                 .thenThrow(new BookNotFoundException("unknown"));
         mockMvc.perform(get("/books/{isbn}", "unknown"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void bookExistsReturnsTrueWhenPresent() throws Exception {
+        when(bookService.bookExists(BOOK.isbn())).thenReturn(true);
+        mockMvc.perform(get("/books/exists/{isbn}", BOOK.isbn()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.exists").value(true));
+        verify(bookService).bookExists(BOOK.isbn());
+    }
+
+    @Test
+    void bookExistsReturnsFalseWhenAbsent() throws Exception {
+        when(bookService.bookExists("unknown")).thenReturn(false);
+        mockMvc.perform(get("/books/exists/{isbn}", "unknown"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.exists").value(false));
+        verify(bookService).bookExists("unknown");
     }
 
     @Test

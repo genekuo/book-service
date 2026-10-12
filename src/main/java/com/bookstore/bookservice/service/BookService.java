@@ -47,5 +47,9 @@ public class BookService {
         return repository.count();
     }
 
+    public boolean bookExists(String isbn) {
+        return repository.existsByIsbn(isbn);
+    }
+
     public record UpsertResult(Book book, boolean created) {}
 }

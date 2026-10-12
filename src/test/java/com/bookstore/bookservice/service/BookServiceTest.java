@@ -91,4 +91,11 @@ class BookServiceTest {
         verify(repository).count();
     }
 
+    @Test
+    void bookExistsDelegatesToRepository() {
+        when(repository.existsByIsbn(BOOK.isbn())).thenReturn(true);
+        assertThat(service.bookExists(BOOK.isbn())).isTrue();
+        verify(repository).existsByIsbn(BOOK.isbn());
+    }
+
 }

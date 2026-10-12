@@ -44,6 +44,8 @@ com.bookstore.bookservice
 | Method | Path | Success | Error | Notes |
 |--------|------|---------|-------|-------|
 | GET | `/books` | 200 `Book[]` | — | |
+| GET | `/books/count` | 200 `{"count": n}` | — | |
+| GET | `/books/exists/{isbn}` | 200 `{"exists": bool}` | — | never 404 |
 | POST | `/books` | 201 `Book` | 422 | duplicate ISBN |
 | GET | `/books/{isbn}` | 200 `Book` | 404 | |
 | PUT | `/books/{isbn}` | 200/201 `Book` | — | 200=updated, 201=created |
