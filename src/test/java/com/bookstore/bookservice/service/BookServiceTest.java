@@ -83,4 +83,12 @@ class BookServiceTest {
         service.removeBookFromCatalog(BOOK.isbn());
         verify(repository).deleteByIsbn(BOOK.isbn());
     }
+
+    @Test
+    void countBooksDelegatesToRepository() {
+        when(repository.count()).thenReturn(3L);
+        assertThat(service.countBooks()).isEqualTo(3L);
+        verify(repository).count();
+    }
+
 }

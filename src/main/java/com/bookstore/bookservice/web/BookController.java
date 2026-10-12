@@ -23,6 +23,13 @@ public class BookController {
         return bookService.viewBookList();
     }
 
+    @GetMapping("/count")
+    public BookCount countBooks() {
+        return new BookCount(bookService.countBooks());
+    }
+
+    public record BookCount(long count) {}
+
     @GetMapping("/{isbn}")
     public ResponseEntity<Book> getBookByIsbn(@PathVariable String isbn) {
         return ResponseEntity.ok(bookService.viewBookDetails(isbn));
