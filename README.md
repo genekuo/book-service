@@ -75,3 +75,20 @@ Teardown:
 ```bash
 kubectl delete pod/book-service svc/book-service
 ```
+
+## Inner loop with Sandforge
+
+This repo ships a [`.sandforge/`](.sandforge/) deploy-target so the whole
+[Sandforge](https://github.com/jpoley/sandforge) inner loop runs end-to-end against book-service:
+import → AI agents push `work/*` → warm local CI → PR review → `graduate` (spin a live stack +
+machine-check the PRD success criteria) → one curated upstream PR.
+
+```bash
+sandforge init
+sandforge import https://github.com/genekuo/book-service.git book-service
+sandforge graduate book-service main    # spins .sandforge stack, runs SC-1…SC-10
+sandforge upstream  book-service main    # opens the single PR (only if staging-main gates pass)
+```
+
+See [`.sandforge/README.md`](.sandforge/README.md) for the success criteria and how to run the
+checks by hand. Inner-loop CI is in [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
